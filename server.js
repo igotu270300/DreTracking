@@ -76,7 +76,7 @@ app.get("/stores", async (req, res) => {
     const stores = await mongoose.connection
       .collection("locations") // Specify the collection name
       .find({ name: { $regex: name || "", $options: "i" } }) // Case-insensitive search
-      .project({ name: 1 }) // Return only the name field
+      .project({ name: 1, Latitude: 1, Longitude: 1 }) // Return only the name field
       .toArray();
 
     res.json(stores);
