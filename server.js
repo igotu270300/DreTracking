@@ -72,11 +72,10 @@ app.get("/stores", async (req, res) => {
   const { name } = req.query;
 
   try {
-    // Search for stores that match the query
-    const stores = await mongoose.connection
-      .collection("locations") // Specify the collection name
+    const stores = await db
+      .collection("locations") // Collection name in MongoDB
       .find({ name: { $regex: name || "", $options: "i" } }) // Case-insensitive search
-      .project({ name: 1 }) // Return only the name field
+      .project({ name: 1, latitude: 1, longitude: 1 }) // Include lat & long
       .toArray();
 
     res.json(stores);
