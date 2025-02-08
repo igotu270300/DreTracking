@@ -68,23 +68,23 @@ app.post("/login", async (req, res) => {
 });
 
 // Route to fetch store names based on a query
-// app.get("/stores", async (req, res) => {
-//   const { name } = req.query;
+app.get("/stores", async (req, res) => {
+  const { name } = req.query;
 
-//   try {
-//     // Search for stores that match the query
-//     const stores = await mongoose.connection
-//       .collection("locations") // Specify the collection name
-//       .find({ name: { $regex: name || "", $options: "i" } }) // Case-insensitive search
-//       .project({ name: 1 }) // Return only the name field
-//       .toArray();
+  try {
+    // Search for stores that match the query
+    const stores = await mongoose.connection
+      .collection("locations") // Specify the collection name
+      .find({ name: { $regex: name || "", $options: "i" } }) // Case-insensitive search
+      .project({ name: 1 }) // Return only the name field
+      .toArray();
 
-//     res.json(stores);
-//   } catch (error) {
-//     console.error("Error fetching stores:", error);
-//     res.status(500).json({ message: "Error fetching stores" });
-//   }
-// });
+    res.json(stores);
+  } catch (error) {
+    console.error("Error fetching stores:", error);
+    res.status(500).json({ message: "Error fetching stores" });
+  }
+});
 
 // Duty Start
 app.post("/dutys/start", async (req, res) => {
