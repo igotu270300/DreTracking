@@ -70,15 +70,14 @@ app.post("/login", async (req, res) => {
 // Route to fetch store names based on a query
 app.get("/stores", async (req, res) => {
   const { name } = req.query;
-
   try {
-    const stores = await db
-      .collection("locations") // Collection name in MongoDB
-      .find({ name: { $regex: name || "", $options: "i" } }) // Case-insensitive search
-      .project({ name: 1, latitude: 1, longitude: 1 }) // Include lat & long
+    const query = name ? { name: name } : {}; // Exact match if name is provided
+    const stores = await db.collection("locations")
+      .find(query)
+      .project({ name: 1, latitude: 1, longitude: 1 })
       .toArray();
 
-    res.json(stores);
+    res.json(stores.length === 1 ? stores[0] : stores);
   } catch (error) {
     console.error("Error fetching stores:", error);
     res.status(500).json({ message: "Error fetching stores" });
