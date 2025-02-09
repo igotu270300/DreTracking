@@ -213,7 +213,7 @@ app.get("/dutys/travel-path/:username", async (req, res) => {
   const { username } = req.params;
 
   try {
-    const duty = await Duty.findOne({ username, status: true });
+    const duty = await Duty.findOne({ username, status: false });
 
     if (!duty) {
       return res.status(404).json({ message: "No active duty found." });
