@@ -53,8 +53,8 @@ module.exports = Duty;
 // Stores Schema
 const storeSchema = new mongoose.Schema({
   name: String,
-  latitude: String,
-  longitude: String,
+  Latitude: String,
+  Longitude: String,
 });
 
 const Store = mongoose.model("Store", storeSchema);
