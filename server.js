@@ -37,6 +37,13 @@ const dutySchema = new mongoose.Schema({
   dutyStopTime: { type: String, default: "" },
   stopLatitude: { type: String, default: "" },
   stopLongtitude: { type: String, default: "" },
+  updateLocation: [
+    {
+      updateLatitude: { type: String, required: true },
+      updateLongtitude: { type: String, required: true },
+      timestamp: { type: Date, default: Date.now },
+    },
+  ],
 });
 
 // const Duty = mongoose.model("Duty", dutySchema);
@@ -76,7 +83,7 @@ app.get("/stores", async (req, res) => {
     const stores = await mongoose.connection
       .collection("locations") // Specify the collection name
       .find({ name: { $regex: name || "", $options: "i" } }) // Case-insensitive search
-      .project({ name: 1, Latitude: 1, Longitude: 1 }) // Return only the name field
+      .project({ name: 1 }) // Return only the name field
       .toArray();
 
     res.json(stores);
@@ -123,6 +130,33 @@ app.post("/dutys/start", async (req, res) => {
   }
 });
 
+app.post("/dutys/update-location", async (req, res) => {
+  const { username, latitude, longitude } = req.body;
+
+  console.log("Live Location Update:", { username, latitude, longitude });
+
+  try {
+    // Find active duty for the user
+    const duty = await Duty.findOne({ username, status: false });
+
+    if (!duty) {
+      return res.status(404).json({ message: "No active duty found." });
+    }
+
+    // Append new location to the updateLocation array
+    duty.updateLocation.push({
+      updateLatitude: latitude.toString(),
+      updateLongtitude: longitude.toString(),
+      timestamp: new Date(),
+    });
+
+    await duty.save();
+    res.json({ message: "Location updated successfully!" });
+  } catch (error) {
+    console.error("Error updating location:", error);
+    res.status(500).json({ message: "Error updating location", error });
+  }
+});
 
 // Stop Duty Route
 app.post("/dutys/stop", async (req, res) => {
