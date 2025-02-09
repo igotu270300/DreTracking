@@ -160,7 +160,12 @@ app.post("/dutys/update-location", async (req, res) => {
 
 // Stop Duty Route
 app.post("/dutys/stop", async (req, res) => {
-  const { token, dutyStop, stopLatitude, stopLongtitude } = req.body;
+  const { dutyStop, stopLatitude, stopLongtitude } = req.body;
+  const token = req.headers.authorization?.split(" ")[1]; // Extract Bearer token
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -168,7 +173,13 @@ app.post("/dutys/stop", async (req, res) => {
 
     const updatedDuty = await Duty.findByIdAndUpdate(
       decoded._id,
-      { dutyStopDate: stopDate, dutyStopTime: stopTime, status: true, stopLatitude: stopLatitude, stopLongtitude: stopLongtitude },
+      {
+        dutyStopDate: stopDate,
+        dutyStopTime: stopTime,
+        status: true,
+        stopLatitude: stopLatitude,
+        stopLongtitude: stopLongtitude,
+      },
       { new: true }
     );
 
@@ -178,6 +189,7 @@ app.post("/dutys/stop", async (req, res) => {
 
     res.json({ message: "Duty stopped successfully!" });
   } catch (error) {
+    console.error("Error stopping duty:", error);
     res.status(500).json({ message: "Error stopping duty", error });
   }
 });
