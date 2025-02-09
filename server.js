@@ -208,6 +208,24 @@ app.get("/pending", async (req, res) => {
   }
 });
 
+// travel-path
+app.get("/dutys/travel-path/:username", async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const duty = await Duty.findOne({ username, status: true });
+
+    if (!duty) {
+      return res.status(404).json({ message: "No active duty found." });
+    }
+
+    res.json({ travelPath: duty.updateLocation });
+  } catch (error) {
+    console.error("Error fetching travel path:", error);
+    res.status(500).json({ message: "Error fetching travel path", error });
+  }
+});
+
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
